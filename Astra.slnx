@@ -9,6 +9,8 @@
     <Project Path="src/Astra.Tools/Astra.Tools.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Astra.Application.Tests/Astra.Application.Tests.csproj" />
     <Project Path="tests/Astra.Architecture.Tests/Astra.Architecture.Tests.csproj" />
+    <Project Path="tests/Astra.Infrastructure.Tests/Astra.Infrastructure.Tests.csproj" />
   </Folder>
 </Solution>

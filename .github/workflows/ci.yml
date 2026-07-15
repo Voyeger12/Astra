@@ -27,9 +27,9 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
-      - name: Restore locked dependencies
+      - name: Restore and update lock files
         shell: pwsh
-        run: ./scripts/restore.ps1
+        run: ./scripts/restore.ps1 -UpdateLockFile
 
       - name: Verify formatting and analyzers
         shell: pwsh
@@ -39,9 +39,16 @@ jobs:
         shell: pwsh
         run: ./scripts/build.ps1 -Configuration Release
 
-      - name: Run architecture tests
+      - name: Run all tests
         shell: pwsh
         run: ./scripts/test.ps1 -Configuration Release
+
+      - name: Upload generated lock files
+        uses: actions/upload-artifact@v4
+        with:
+          name: operational-kernel-lockfiles
+          path: '**/packages.lock.json'
+          if-no-files-found: error
 
       - name: Upload diagnostics
         if: always()
