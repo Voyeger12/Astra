@@ -1,6 +1,6 @@
 # Development Guide
 
-Dieses Dokument beschreibt die technische Arbeitsweise für Astra. Es gilt für Menschen, KI-Coding-Agenten, Copilot und automatisierte Änderungen.
+Dieses Dokument beschreibt die technische Arbeitsweise für Astra. Es gilt für Menschen, KI-Coding-Agenten, Copilot und automatisierte Änderungen. Die verbindliche Testklassifikation und Regeln zur Änderung bestehender Tests stehen ergänzend in `docs/TEST-STRATEGY.md`.
 
 ## Quellenhierarchie
 
@@ -72,6 +72,51 @@ Nicht erlaubt:
 
 Ein Bugfix erhält grundsätzlich einen Regressionstest, der vor der Korrektur fehlschlägt und danach besteht.
 
+## Test-first, Contract-first und Eval-first
+
+### Test-first
+
+Deterministische Regeln werden grundsätzlich mit einem zuerst fehlschlagenden Test entwickelt. Dazu gehören:
+
+- Domain- und Application-Regeln,
+- Tool-Policies und Freigaben,
+- Pfad- und Speicherlogik,
+- Persistenz und Migrationen,
+- Lifecycle und Cancellation,
+- bestätigte Fehler als Regressionstest.
+
+### Contract-first
+
+An Grenzen zwischen Komponenten wird zuerst das beobachtbare Verhalten aus Sicht des Aufrufers festgelegt. Dazu gehören:
+
+- Agent Runtime,
+- Model Provider,
+- Tools und Tool Registry,
+- Sessions und Conversation State,
+- Memory- und Persistenzverträge,
+- Approval Service und Event-Übersetzung.
+
+Contract Tests dürfen nicht unnötig konkrete Frameworkaufrufe oder interne Klassenaufteilungen festschreiben.
+
+### Eval-first
+
+Nichtdeterministisches Modellverhalten wird mit dokumentierten Testfällen und Eigenschaften bewertet. Dazu gehören Tool-Auswahl, verbotene Aktionen, Evidenz, Prompt Injection und Antwortverhalten bei Unsicherheit.
+
+Evals ersetzen keine deterministischen Tests und blockieren nicht automatisch jeden lokalen Build, solange Modell, Parameter, Hardware und Ergebnis transparent dokumentiert werden.
+
+## Änderung bestehender Tests
+
+Ein bestehender Test darf nicht geändert werden, nur damit eine Implementierung grün wird.
+
+Zulässige Gründe sind ausschließlich:
+
+- eine bewusst geänderte fachliche Anforderung,
+- ein nachweislich fehlerhafter Test,
+- ein ADR, das einen bisherigen Vertrag ersetzt,
+- die Entfernung unnötiger Kopplung an Implementierungsdetails.
+
+Der Pull Request dokumentiert alte und neue Erwartung, Begründung, Risiko und neuen Schutz.
+
 ## Testregeln
 
 Tests prüfen fachlich erwartetes Verhalten, nicht nur die aktuelle Implementierung.
@@ -84,7 +129,8 @@ Nicht erlaubt:
 - Produktionslogik im Test nachbauen und anschließend nur diese Kopie testen,
 - Integrationstests durch leichtere Unit Tests ersetzen, obwohl der echte Ablauf betroffen ist,
 - `Task.Delay` als Synchronisationsstrategie,
-- unrealistische Mock-Antworten, die reale Fehlerfälle unsichtbar machen.
+- unrealistische Mock-Antworten, die reale Fehlerfälle unsichtbar machen,
+- Produktionscode, der auf Testnamen, konkrete Testdaten oder Testumgebungsdetails verzweigt.
 
 Prüfreihenfolge:
 
@@ -105,7 +151,7 @@ Relevante Tests decken mindestens ab:
 - Persistenz und Neustart, sofern betroffen,
 - Tool-Freigaben und abgelehnte Aktionen.
 
-Agentenverhalten benötigt zusätzlich Contract Tests mit Fake-`IChatClient` und gezielte lokale Evals gegen ein konfiguriertes Ollama-Modell.
+Agentenverhalten benötigt zusätzlich Contract Tests mit Fake-`IChatClient` und gezielte lokale Evals gegen ein dokumentiertes Ollama-Modell.
 
 ## Nebenläufigkeit und Lifecycle
 
@@ -151,34 +197,37 @@ Aussagen wie „cleaner“ oder „moderner“ reichen nicht. Es muss benannt we
 1. Aufgabe und Akzeptanzkriterien verstehen.
 2. Relevante Regeln, Skills und ADRs lesen.
 3. Betroffene Dateien, Datenflüsse und Verträge untersuchen.
-4. Bestehende Tests prüfen.
-5. Ursache oder Implementierungsziel formulieren.
-6. Blast Radius einschätzen.
-7. Kleinste geeignete Änderung planen.
-8. Änderung implementieren.
-9. Passende Tests ergänzen oder aktualisieren.
-10. Build und Tests tatsächlich ausführen.
-11. Warnungen und Analyzer prüfen.
-12. Gesamten Diff auf Nebenwirkungen überprüfen.
-13. Ergebnis und nicht geprüfte Bereiche ehrlich dokumentieren.
+4. Bestehende Tests und ihre Kategorie prüfen.
+5. Passende Testebene bestimmen.
+6. Ursache oder Implementierungsziel formulieren.
+7. Blast Radius einschätzen.
+8. Bei deterministischem Verhalten zuerst einen fehlschlagenden Test oder Vertrag erstellen.
+9. Kleinste geeignete Änderung implementieren.
+10. Passende Tests ergänzen oder aktualisieren.
+11. Build und Tests tatsächlich ausführen.
+12. Warnungen und Analyzer prüfen.
+13. Gesamten Diff auf Nebenwirkungen und testbezogene Sonderfälle überprüfen.
+14. Ergebnis und nicht geprüfte Bereiche ehrlich dokumentieren.
 
 ## Pflichtprüfung nach einer Änderung
 
 Vor Abschluss muss beantwortet werden:
 
 - Wurde nur der notwendige Bereich verändert?
-- Wurden APIs oder Verhalten unbeabsichtigt verändert?
+- Wurden APIs, Verträge, Tests oder Verhalten unbeabsichtigt verändert?
 - Gibt es neue Warnungen?
 - Gibt es neue unbehandelte Exceptions?
 - Funktioniert Cancellation?
 - Wurden Sicherheit und Datenschutz berücksichtigt?
 - Wurden echte Tests ausgeführt?
+- Würde ein Regressionstest ohne den Fix tatsächlich fehlschlagen?
+- Sind Änderungen bestehender Tests nachvollziehbar begründet?
 - Sind Behauptungen im PR durch Ergebnisse belegt?
 - Bleibt die Abhängigkeitsrichtung korrekt?
 - Wurde neue technische Schuld eingeführt?
 
 ## Stop-Regel
 
-Wenn eine Änderung nicht sicher verstanden wird, darf eine KI nicht durch großflächige Änderungen versuchen, zufällig eine funktionierende Lösung zu erzeugen. Sie sammelt zuerst mehr Kontext, prüft Dokumentation oder benennt die Unsicherheit offen.
+Wenn eine Änderung oder das erwartete Verhalten nicht sicher verstanden wird, darf eine KI nicht durch großflächige Änderungen oder erfundene Tests versuchen, zufällig eine funktionierende Lösung zu erzeugen. Sie sammelt zuerst mehr Kontext, prüft Dokumentation und Verträge oder benennt die Unsicherheit offen.
 
 Lieber eine Aufgabe begründet nicht abschließen als einen scheinbar funktionierenden Fix liefern, dessen Nebenwirkungen nicht verstanden wurden.
