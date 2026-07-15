@@ -49,14 +49,6 @@ jobs:
           path: artifacts/logs
           if-no-files-found: warn
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: artifacts/test-results
-          if-no-files-found: warn
-
       - name: Upload generated lock files
         if: always()
         uses: actions/upload-artifact@v4
