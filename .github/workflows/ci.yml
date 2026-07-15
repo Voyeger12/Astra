@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore and generate lock files
+        shell: pwsh
+        run: ./scripts/restore.ps1
+
+      - name: Verify formatting and analyzers
+        shell: pwsh
+        run: dotnet format Astra.slnx --verify-no-changes --no-restore
+
+      - name: Build release
+        shell: pwsh
+        run: ./scripts/build.ps1 -Configuration Release
+
+      - name: Run architecture tests
+        shell: pwsh
+        run: ./scripts/test.ps1 -Configuration Release
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+          if-no-files-found: warn
+
+      - name: Upload generated lock files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-package-locks
+          path: '**/packages.lock.json'
+          if-no-files-found: warn
