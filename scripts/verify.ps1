@@ -1,7 +1,5 @@
 [CmdletBinding()]
-param(
-    [switch]$LockedRestore
-)
+param()
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -11,7 +9,7 @@ if (-not (Test-Path $solution)) {
     throw 'Astra.slnx wurde nicht gefunden.'
 }
 
-& (Join-Path $PSScriptRoot 'restore.ps1') -Locked:$LockedRestore
+& (Join-Path $PSScriptRoot 'restore.ps1')
 
 Push-Location $root
 try {
