@@ -15,6 +15,7 @@ Vor einer Änderung sind zu lesen:
 - `SECURITY.md`
 - `docs/DEVELOPMENT.md`
 - `docs/ARCHITECTURE_RULES.md`
+- `docs/TEST-STRATEGY.md`
 - relevante ADRs unter `docs/adr/`
 - der passende Repository-Skill unter `.github/skills/`
 
@@ -72,6 +73,36 @@ Nicht erlaubt:
 - Ein grüner Build allein beweist kein korrektes Verhalten.
 - Es darf nicht behauptet werden, ein Fehler sei behoben, wenn Build und relevante Tests nicht tatsächlich ausgeführt wurden.
 
+## Test-first und Contract-first
+
+Vor oder gemeinsam mit der Implementierung entstehen ausführbare Tests beziehungsweise Verträge für:
+
+- Domain- und Application-Regeln,
+- Architekturgrenzen,
+- Tool-Policies und Freigaben,
+- Pfad- und Speicherlogik,
+- Persistenz und Migrationen,
+- Lifecycle und Cancellation,
+- Agent Contract Verhalten,
+- bestätigte Fehler als Regressionstest.
+
+Nichtdeterministisches Modellverhalten wird mit Evals geprüft. Evals ersetzen keine deterministischen Tests.
+
+Tests werden nicht vorab für hypothetische private Methoden, Klassenaufteilungen oder andere Implementierungsdetails geschrieben.
+
+## Änderung bestehender Tests
+
+Ein bestehender Test darf nicht geändert werden, nur damit eine Implementierung grün wird.
+
+Eine Änderung ist nur zulässig, wenn:
+
+- sich eine Anforderung bewusst geändert hat,
+- der Test nachweislich falsches Verhalten fordert,
+- ein ADR einen Vertrag ersetzt,
+- der Test unnötig an Implementierungsdetails gekoppelt ist.
+
+Der Pull Request dokumentiert alte Erwartung, neue Erwartung, Begründung, Risiko und den neuen Schutz.
+
 ## Testintegrität
 
 Tests prüfen fachlich erwartetes Verhalten.
@@ -84,9 +115,10 @@ Nicht erlaubt:
 - Produktionslogik im Test kopieren und nur die Kopie prüfen,
 - erforderliche Integrationstests durch leichtere Unit Tests ersetzen,
 - `Task.Delay` als Synchronisationsstrategie,
-- unrealistische Mock-Antworten, die reale Fehlerzustände verdecken.
+- unrealistische Mock-Antworten, die reale Fehlerzustände verdecken,
+- Produktionscode, der auf konkrete Testnamen, Testdaten oder Testumgebungen verzweigt.
 
-Ein Bugfix benötigt einen Regressionstest, der den ursprünglichen Fehler abdeckt.
+Ein Bugfix benötigt einen Regressionstest, der den ursprünglichen Fehler abdeckt und ohne den Fix fehlschlägt.
 
 ## Abhängigkeiten
 
@@ -114,14 +146,15 @@ Preview- und Prerelease-Pakete benötigen eine bewusste Architekturentscheidung.
 1. Aufgabe und Akzeptanzkriterien verstehen.
 2. Regeln, Skills und ADRs lesen.
 3. Betroffene Dateien, Verträge, Datenflüsse und Tests untersuchen.
-4. Ursache oder Implementierungsziel formulieren.
-5. Blast Radius einschätzen.
-6. Kleinste geeignete Änderung planen.
-7. Implementieren.
-8. Passende Tests ergänzen oder aktualisieren.
-9. Build, Tests, Analyzer und Warnungen tatsächlich ausführen.
-10. Gesamten Diff auf Nebenwirkungen prüfen.
-11. Ergebnis und nicht geprüfte Bereiche ehrlich dokumentieren.
+4. Testkategorie und passende Testebene bestimmen.
+5. Ursache oder Implementierungsziel formulieren.
+6. Blast Radius einschätzen.
+7. Bei deterministischem Verhalten zuerst einen fehlschlagenden Test oder Vertrag erstellen.
+8. Kleinste geeignete Änderung implementieren.
+9. Passende Tests ergänzen oder aktualisieren.
+10. Build, Tests, Analyzer und Warnungen tatsächlich ausführen.
+11. Gesamten Diff auf Nebenwirkungen und testbezogene Sonderfälle prüfen.
+12. Ergebnis und nicht geprüfte Bereiche ehrlich dokumentieren.
 
 ## Definition of Done
 
@@ -130,15 +163,17 @@ Eine Änderung ist erst fertig, wenn:
 - das beabsichtigte Verhalten nachgewiesen ist,
 - die Root Cause bei Bugs identifiziert wurde,
 - relevante Tests bestehen,
+- Regressionstests ohne den Fix tatsächlich fehlschlagen würden,
 - keine Warnungen versteckt wurden,
 - Cancellation und Fehlerpfade berücksichtigt sind,
 - Sicherheits- und Datenschutzregeln eingehalten werden,
 - die Architekturgrenzen bestehen bleiben,
+- bestehende Teständerungen nachvollziehbar begründet sind,
 - Dokumentation und ADRs weiterhin stimmen,
 - nicht geprüfte Bereiche offen benannt sind.
 
 ## Stop-Regel
 
-Wenn eine Änderung nicht sicher verstanden wird, darf eine KI nicht durch großflächige Änderungen versuchen, zufällig eine funktionierende Lösung zu erzeugen. Zuerst werden Kontext, Verträge und offizielle Dokumentation geprüft oder die Unsicherheit offen benannt.
+Wenn eine Änderung oder das erwartete Verhalten nicht sicher verstanden wird, darf eine KI nicht durch großflächige Änderungen oder erfundene Tests versuchen, zufällig eine funktionierende Lösung zu erzeugen. Zuerst werden Kontext, Verträge und offizielle Dokumentation geprüft oder die Unsicherheit offen benannt.
 
 Lieber eine Aufgabe begründet nicht abschließen als einen scheinbar funktionierenden Fix liefern, dessen Nebenwirkungen nicht verstanden wurden.
