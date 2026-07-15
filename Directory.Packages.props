@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Paketversionen werden beim Solution-Scaffolding bewusst ergänzt. -->
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
   </ItemGroup>
 </Project>
