@@ -32,7 +32,7 @@ public partial class App : Application
             await host.StartAsync().ConfigureAwait(true);
 
             logger = host.Services.GetRequiredService<ILogger<App>>();
-            logger.LogInformation(AstraLogEventIds.ApplicationStarted, "Astra application host started");
+            AppLogMessages.ApplicationStarted(logger);
         }
         catch (Exception exception)
         {
@@ -45,19 +45,26 @@ public partial class App : Application
     {
         try
         {
-            logger?.LogInformation(AstraLogEventIds.ApplicationStopping, "Astra application host is stopping");
+            if (logger is not null)
+            {
+                AppLogMessages.ApplicationStopping(logger);
+            }
+
             if (host is not null)
             {
                 using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
                 await host.StopAsync(timeout.Token).ConfigureAwait(true);
-                logger?.LogInformation(AstraLogEventIds.ApplicationStopped, "Astra application host stopped");
+                if (logger is not null)
+                {
+                    AppLogMessages.ApplicationStopped(logger);
+                }
             }
         }
         catch (Exception exception)
         {
             if (logger is not null)
             {
-                logger.LogError(AstraLogEventIds.ApplicationShutdownFailed, exception, "Astra application host failed during shutdown");
+                AppLogMessages.ApplicationShutdownFailed(logger, exception);
             }
             else
             {
@@ -76,7 +83,7 @@ public partial class App : Application
     {
         if (logger is not null)
         {
-            logger.LogCritical(AstraLogEventIds.UnhandledException, e.Exception, "Unhandled dispatcher exception");
+            AppLogMessages.DispatcherUnhandledException(logger, e.Exception);
         }
         else
         {
@@ -96,7 +103,7 @@ public partial class App : Application
 
         if (logger is not null)
         {
-            logger.LogCritical(AstraLogEventIds.UnhandledException, exception, "Unhandled process exception");
+            AppLogMessages.ProcessUnhandledException(logger, exception);
         }
         else
         {
