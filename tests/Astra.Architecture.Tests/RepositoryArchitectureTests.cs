@@ -8,7 +8,7 @@ public sealed class RepositoryArchitectureTests
     private static readonly string Root = FindRepositoryRoot();
 
     [Fact]
-    public void Solution_contains_expected_projects()
+    public void SolutionContainsExpectedProjects()
     {
         var solution = XDocument.Load(Path.Combine(Root, "Astra.slnx"));
         var actual = solution.Descendants("Project")
@@ -33,7 +33,7 @@ public sealed class RepositoryArchitectureTests
     }
 
     [Fact]
-    public void Project_references_follow_allowed_graph()
+    public void ProjectReferencesFollowAllowedGraph()
     {
         var allowed = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
         {
@@ -62,7 +62,7 @@ public sealed class RepositoryArchitectureTests
     }
 
     [Fact]
-    public void Only_desktop_and_presentation_are_windows_wpf_projects()
+    public void OnlyDesktopAndPresentationAreWindowsWpfProjects()
     {
         foreach (var project in FindProjects())
         {
@@ -78,7 +78,7 @@ public sealed class RepositoryArchitectureTests
     }
 
     [Fact]
-    public void Repository_does_not_use_latest_or_preview_language_version()
+    public void RepositoryDoesNotUseLatestOrPreviewLanguageVersion()
     {
         foreach (var file in Directory.EnumerateFiles(Root, "*.props", SearchOption.TopDirectoryOnly)
                      .Concat(FindProjects()))
@@ -90,7 +90,7 @@ public sealed class RepositoryArchitectureTests
     }
 
     [Fact]
-    public void Package_versions_are_centrally_managed()
+    public void PackageVersionsAreCentrallyManaged()
     {
         foreach (var project in FindProjects())
         {
@@ -101,7 +101,7 @@ public sealed class RepositoryArchitectureTests
     }
 
     [Fact]
-    public void No_template_placeholder_files_exist()
+    public void NoTemplatePlaceholderFilesExist()
     {
         var forbidden = Directory.EnumerateFiles(Root, "*", SearchOption.AllDirectories)
             .Where(path => Path.GetFileName(path) is "Class1.cs" or "UnitTest1.cs");
@@ -109,7 +109,7 @@ public sealed class RepositoryArchitectureTests
     }
 
     [Fact]
-    public void Scripts_reference_modern_solution_format()
+    public void ScriptsReferenceModernSolutionFormat()
     {
         foreach (var script in Directory.EnumerateFiles(Path.Combine(Root, "scripts"), "*.ps1"))
         {
