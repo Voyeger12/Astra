@@ -21,3 +21,4 @@ ADRs dokumentieren tragende Entscheidungen, ihren Kontext und ihre Folgen. Akzep
 - [ADR-008: Zentrale Build- und Artefaktstruktur](0008-build-and-artifact-layout.md)
 - [ADR-009: Laufzeitdaten unter LocalApplicationData](0009-runtime-data-paths.md)
 - [ADR-010: Erste Distribution als self-contained win-x64-Ordner](0010-initial-distribution-strategy.md)
+- [ADR-011: Test-first und Contract Testing](0011-test-first-and-contract-testing.md)
