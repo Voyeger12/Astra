@@ -18,6 +18,7 @@ Astra befindet sich in der Architektur- und Bootstrap-Phase. Der frühere Python
 - Datenschutz als durchgesetzte Systemregel, nicht nur als UI-Schalter
 - Korrektheit und begrenzter Blast Radius vor Entwicklungsgeschwindigkeit
 - Root-Cause-Fixes statt Symptombehandlung
+- Verhalten, Verträge, Sicherheit und Architektur vor Implementierungsdetails testen
 
 ## Geplanter Techstack
 
@@ -49,6 +50,16 @@ Astra.Tools          ┘
 ```
 
 Die Oberfläche kennt weder Ollama noch SQLite noch MCP direkt. Der Agent Loop wird vom Agent Framework betrieben. Astra behält die Kontrolle über Fachlogik, Tool-Berechtigungen, Daten, Lifecycle, Sicherheitsrichtlinien und Providerkonfiguration.
+
+## Teststrategie
+
+Astra verwendet je nach Problem drei Ansätze:
+
+- Test-first für deterministische Fachlogik, Policies, Pfade, Persistenz und Lifecycle
+- Contract-first für Agent Runtime, Provider, Speicher- und Tool-Verträge
+- Eval-first für nichtdeterministisches Modellverhalten
+
+Tests dürfen nicht geändert werden, nur damit eine Implementierung grün wird. Verfassungsverträge wie Architekturgrenzen, Sicherheitsregeln, Freigaben, Datenverlustschutz und Cancellation sind besonders geschützt. Die vollständigen Regeln stehen in [Test Strategy](docs/TEST-STRATEGY.md) und [ADR-011](docs/adr/0011-test-first-and-contract-testing.md).
 
 ## Build- und Laufzeitgrundlage
 
@@ -83,6 +94,7 @@ Die Regeln gelten für Menschen, Copilot, Coding-Agenten und automatisierte Änd
 - [Sicherheitsregeln](SECURITY.md)
 - [Technische Entwicklungsstandards](docs/DEVELOPMENT.md)
 - [Verbindliche Architekturregeln](docs/ARCHITECTURE_RULES.md)
+- [Teststrategie](docs/TEST-STRATEGY.md)
 
 Korrektheit, Nachvollziehbarkeit und begrenzte Auswirkungen haben Vorrang vor Geschwindigkeit. Warnungen werden nicht versteckt, Bugfixes beheben die identifizierte Root Cause und Tests dürfen nicht manipuliert werden, um einen grünen Zustand zu erzeugen.
 
