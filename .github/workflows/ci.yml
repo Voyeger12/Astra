@@ -24,35 +24,11 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
 
-      - name: Restore and generate lock files
+      - name: Restore locked dependencies
         shell: pwsh
         run: ./scripts/restore.ps1
 
-      - name: Verify formatting and analyzers
-        shell: pwsh
-        run: dotnet format Astra.slnx --verify-no-changes --no-restore
-
-      - name: Build release
-        shell: pwsh
-        run: ./scripts/build.ps1 -Configuration Release
-
-      - name: Run architecture tests
-        shell: pwsh
-        run: ./scripts/test.ps1 -Configuration Release
-
-      - name: Upload diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: diagnostics
-          path: artifacts/logs
-          if-no-files-found: warn
-
-      - name: Upload generated lock files
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-package-locks
-          path: '**/packages.lock.json'
-          if-no-files-found: warn
+      - name: Verify
