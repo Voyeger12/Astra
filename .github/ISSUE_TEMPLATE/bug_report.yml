@@ -1,0 +1,67 @@
+name: Bug report
+description: Einen reproduzierbaren Fehler melden
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bitte beschreibe den Fehler so, dass Beobachtung, Erwartung und Reproduktion getrennt nachvollziehbar sind.
+  - type: textarea
+    id: observed
+    attributes:
+      label: Beobachtetes Verhalten
+      description: Was ist tatsächlich passiert?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+      description: Was hätte passieren sollen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduktionsschritte
+      description: Möglichst kleinster zuverlässiger Ablauf.
+      placeholder: |
+        1. Astra starten
+        2. ...
+        3. Fehler tritt auf
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Astra-Version oder Commit
+      placeholder: v0.1.0 oder Commit-SHA
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Umgebung
+      placeholder: Windows-Version, Architektur, Ollama-Version, Modell
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Relevante Logs oder Fehlermeldungen
+      description: Keine Secrets, Tokens oder persönlichen Inhalte einfügen.
+      render: text
+  - type: textarea
+    id: scope
+    attributes:
+      label: Vermuteter Wirkungsbereich
+      description: Optional. Welche Funktion oder Schicht scheint betroffen?
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Datenschutzprüfung
+      options:
+        - label: Ich habe Secrets, Tokens und persönliche Inhalte aus Logs und Anhängen entfernt.
+          required: true
