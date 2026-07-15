@@ -11,8 +11,9 @@ public sealed class RepositoryArchitectureTests
     {
         var solution = XDocument.Load(Path.Combine(Root, "Astra.slnx"));
         var actual = solution.Descendants("Project")
-            .Select(x => Normalize((string?)x.Attribute("Path")))
-            .Where(x => x is not null)
+            .Select(x => (string?)x.Attribute("Path"))
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => Normalize(x!))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var expected = new[]
@@ -49,8 +50,9 @@ public sealed class RepositoryArchitectureTests
         {
             var name = Path.GetFileNameWithoutExtension(project);
             var actual = XDocument.Load(project).Descendants("ProjectReference")
-                .Select(x => Path.GetFileNameWithoutExtension((string?)x.Attribute("Include")))
+                .Select(x => (string?)x.Attribute("Include"))
                 .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => Path.GetFileNameWithoutExtension(x!))
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             Assert.True(allowed.TryGetValue(name, out var expected), $"Unexpected project: {name}");
@@ -120,7 +122,7 @@ public sealed class RepositoryArchitectureTests
         Directory.EnumerateFiles(Path.Combine(Root, "src"), "*.csproj", SearchOption.AllDirectories)
             .Concat(Directory.EnumerateFiles(Path.Combine(Root, "tests"), "*.csproj", SearchOption.AllDirectories));
 
-    private static string? Normalize(string? path) => path?.Replace('\\', '/');
+    private static string Normalize(string path) => path.Replace('\\', '/');
 
     private static string FindRepositoryRoot()
     {
