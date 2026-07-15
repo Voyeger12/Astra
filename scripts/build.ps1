@@ -6,10 +6,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$solution = Join-Path $root 'Astra.sln'
+$solution = Join-Path $root 'Astra.slnx'
 
 if (-not (Test-Path $solution)) {
-    throw 'Astra.sln wurde noch nicht angelegt. Build ist erst nach dem Solution-Scaffolding möglich.'
+    throw 'Astra.slnx wurde nicht gefunden.'
 }
 
 Push-Location $root
