@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-and-test:
@@ -17,10 +17,8 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Checkout feature branch for lockfile bootstrap
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -29,21 +27,9 @@ jobs:
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
-      - name: Restore and update lock files
+      - name: Restore locked dependencies
         shell: pwsh
-        run: ./scripts/restore.ps1 -UpdateLockFile
-
-      - name: Commit generated lock files
-        if: github.event_name == 'pull_request'
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- '**/packages.lock.json'
-          if (-not (git diff --cached --quiet)) {
-            git commit -m "Update operational kernel lock files"
-            git push origin "HEAD:${{ github.head_ref }}"
-          }
+        run: ./scripts/restore.ps1
 
       - name: Verify formatting and analyzers
         shell: pwsh
