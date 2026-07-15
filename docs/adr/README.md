@@ -18,3 +18,6 @@ ADRs dokumentieren tragende Entscheidungen, ihren Kontext und ihre Folgen. Akzep
 - [ADR-005: SQLite für lokale Persistenz](0005-sqlite-persistence.md)
 - [ADR-006: Tool-basierte Berechtigungen](0006-tool-policies.md)
 - [ADR-007: Ein Agent vor Multi-Agent](0007-single-agent-first.md)
+- [ADR-008: Zentrale Build- und Artefaktstruktur](0008-build-and-artifact-layout.md)
+- [ADR-009: Laufzeitdaten unter LocalApplicationData](0009-runtime-data-paths.md)
+- [ADR-010: Erste Distribution als self-contained win-x64-Ordner](0010-initial-distribution-strategy.md)
