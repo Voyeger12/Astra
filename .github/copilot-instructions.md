@@ -11,6 +11,8 @@ Vor Änderungen sind mindestens zu lesen:
 - `docs/DEVELOPMENT.md`
 - `docs/ARCHITECTURE_RULES.md`
 - `docs/TEST-STRATEGY.md`
+- `docs/LOGGING-AND-OBSERVABILITY.md`
+- `docs/ERROR-HANDLING.md`
 - relevante ADRs unter `docs/adr/`
 - der passende Skill unter `.github/skills/`
 
@@ -36,22 +38,38 @@ Lieber eine Aufgabe begründet nicht abschließen als einen scheinbar funktionie
 - Conversation State, Long-Term Memory, Tool Runs und Application State bleiben getrennt.
 - Keine globalen veränderbaren Singletons.
 - Neue tragende Entscheidungen benötigen ein ADR.
-- Features werden als vollständige vertikale Abläufe mit Tests umgesetzt.
+- Features werden als vollständige vertikale Abläufe mit Tests, Fehlerbehandlung und Diagnose umgesetzt.
 
 ## Fehler, Warnungen und Root Cause
 
 - Warnungen und Fehler niemals ignorieren oder verstecken.
 - Keine Analyzer, Nullable-Prüfungen, Tests oder Assertions deaktivieren, um einen grünen Zustand zu erzeugen.
 - Keine leeren `catch`-Blöcke und kein pauschales Schlucken von Exceptions.
+- Technische Exceptions an klaren Boundaries in typisierte Astra-Fehler übersetzen.
+- Cancellation, Timeout, Ablehnung und unerwartete Fehler nicht miteinander vermischen.
+- Exceptions nur dort loggen, wo ausreichend Kontext vorhanden ist, und nicht in jeder Schicht erneut.
+- Stacktraces und interne Exceptiondetails niemals ungefiltert an die UI weitergeben.
 - Bei Bugs zuerst beobachtetes und erwartetes Verhalten, Reproduktion, Datenfluss, Root Cause und Blast Radius bestimmen.
 - Nur die identifizierte Ursache mit der kleinsten geeigneten Änderung beheben.
 - Keine zusätzlichen Timeouts, Retries oder `if`-Abfragen, die nur Symptome verdecken.
 - Keine benachbarten Refactorings, Paketupdates oder Formatierungswellen als Teil eines Bugfixes.
 
+## Logging und Observability
+
+- `Microsoft.Extensions.Logging` als gemeinsame Abstraktion verwenden.
+- Konkrete Logger, lokale Dateien und OpenTelemetry ausschließlich in `Astra.Infrastructure` konfigurieren.
+- Strukturierte Event-IDs, Fehlercodes und Korrelations-IDs verwenden.
+- Logs, Traces und Audit-Ereignisse fachlich trennen.
+- Keine vollständigen Prompts, Antworten, Tool-Argumente, Dateiinhalte, lokalen Pfade, Tokens oder Secrets protokollieren.
+- Diagnosefelder bevorzugt über eine Allowlist zulässiger Metadaten bestimmen.
+- Cancellation und normale Benutzerablehnung nicht als Systemfehler loggen.
+- Ein neuer Logging-Provider benötigt eine bewusste Paketprüfung; keine Bibliothek ohne konkreten Bedarf installieren.
+
 ## Test-first und Contract-first
 
 - Deterministische Fachlogik, Policies, Pfade, Persistenz, Migrationen, Lifecycle und Cancellation werden test-first entwickelt.
 - Agent Runtime, Provider, Tools, Sessions und Speichergrenzen werden contract-first entwickelt.
+- Fehlercodes, Exception-Mapping, Redaction und Korrelation sind Teil der Verträge.
 - Nichtdeterministisches Modellverhalten wird mit getrennten Evals geprüft.
 - Architektur- und Sicherheitsverträge werden nicht an eine konkrete Implementierung gekoppelt.
 - Keine Tests für hypothetische private Methoden oder erfundene Klassenhierarchien.
@@ -70,6 +88,7 @@ Lieber eine Aufgabe begründet nicht abschließen als einen scheinbar funktionie
 - Tests müssen fachlich erwartetes Verhalten prüfen.
 - Bei Agentenpfaden Contract Tests mit Fake-`IChatClient` und bei relevantem Verhalten lokale Evals vorsehen.
 - Evals ersetzen keine Unit-, Contract-, Architektur- oder Integrationstests.
+- Logs werden über stabile Event-IDs und erlaubte Felder getestet, nicht über jeden Freitext.
 - Build, Tests, Analyzer und Warnungen tatsächlich ausführen. Nicht behaupten, sie seien erfolgreich, wenn sie nicht ausgeführt wurden.
 
 ## C# und Quellen
@@ -96,14 +115,15 @@ Lieber eine Aufgabe begründet nicht abschließen als einen scheinbar funktionie
 2. Relevante Regeln, ADRs und Skills lesen.
 3. Betroffene Dateien, Verträge, Datenflüsse und bestehende Tests untersuchen.
 4. Testkategorie und passende Testebene bestimmen.
-5. Ursache oder Implementierungsziel formulieren.
-6. Blast Radius einschätzen.
-7. Bei deterministischem Verhalten zuerst einen fehlschlagenden Test oder Vertrag erstellen.
-8. Kleinste geeignete Änderung implementieren.
-9. Engste und anschließend breitere Tests ausführen.
-10. Build, Analyzer und Warnungen prüfen.
-11. Gesamten Diff auf Nebenwirkungen, Architekturverletzungen und testbezogene Sonderfälle prüfen.
-12. Ergebnis sowie nicht geprüfte Bereiche ehrlich dokumentieren.
+5. Fehler-, Logging- und Datenschutzvertrag des Ablaufs bestimmen.
+6. Ursache oder Implementierungsziel formulieren.
+7. Blast Radius einschätzen.
+8. Bei deterministischem Verhalten zuerst einen fehlschlagenden Test oder Vertrag erstellen.
+9. Kleinste geeignete Änderung implementieren.
+10. Engste und anschließend breitere Tests ausführen.
+11. Build, Analyzer und Warnungen prüfen.
+12. Gesamten Diff auf Nebenwirkungen, Architekturverletzungen, sensible Logdaten und testbezogene Sonderfälle prüfen.
+13. Ergebnis sowie nicht geprüfte Bereiche ehrlich dokumentieren.
 
 ## Stop-Regel
 

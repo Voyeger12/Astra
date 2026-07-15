@@ -32,8 +32,8 @@ Astra befindet sich in der Architektur- und Bootstrap-Phase. Der frühere Python
 - OllamaSharp als erster lokaler Modellprovider
 - Model Context Protocol für externe Integrationen
 - SQLite für lokale Persistenz
-- xUnit, FluentAssertions und Test-Doubles für Agent Contract Tests
-- OpenTelemetry für Tracing und Diagnose
+- xUnit und Test-Doubles für Agent Contract Tests
+- Microsoft.Extensions.Logging und OpenTelemetry für strukturierte Diagnose
 
 ## Zielarchitektur
 
@@ -69,7 +69,7 @@ Tests dürfen nicht geändert werden, nur damit eine Implementierung grün wird.
 - Reproduzierbare Build-Ausgaben liegen ausschließlich unter `artifacts/`.
 - Laufzeit- und Nutzerdaten liegen ausschließlich unter `%LOCALAPPDATA%\Astra`.
 - Die erste Veröffentlichung ist ein selbstenthaltener `win-x64`-Ordner, kein Installer und kein Single-File-Build.
-- Die Skripte unter `scripts/` brechen bewusst ab, solange die Solution noch nicht existiert, statt Erfolg zu simulieren.
+- Die Skripte unter `scripts/` bilden Restore, Build, Test, Verify und Publish reproduzierbar ab.
 
 ## Erster Meilenstein
 
@@ -95,6 +95,8 @@ Die Regeln gelten für Menschen, Copilot, Coding-Agenten und automatisierte Änd
 - [Technische Entwicklungsstandards](docs/DEVELOPMENT.md)
 - [Verbindliche Architekturregeln](docs/ARCHITECTURE_RULES.md)
 - [Teststrategie](docs/TEST-STRATEGY.md)
+- [Logging und Observability](docs/LOGGING-AND-OBSERVABILITY.md)
+- [Fehlerbehandlung](docs/ERROR-HANDLING.md)
 
 Korrektheit, Nachvollziehbarkeit und begrenzte Auswirkungen haben Vorrang vor Geschwindigkeit. Warnungen werden nicht versteckt, Bugfixes beheben die identifizierte Root Cause und Tests dürfen nicht manipuliert werden, um einen grünen Zustand zu erzeugen.
 
@@ -116,4 +118,4 @@ Astra steht unter der [MIT-Lizenz](LICENSE).
 
 ## Entwicklungsregel
 
-Jede neue Fähigkeit wird als vollständiger vertikaler Ablauf umgesetzt und getestet. Eine Funktion gilt erst als vorhanden, wenn UI, Application Use Case, Agent- oder Tool-Pfad, Persistenz, Fehlerbehandlung und Tests zusammen funktionieren.
+Jede neue Fähigkeit wird als vollständiger vertikaler Ablauf umgesetzt und getestet. Eine Funktion gilt erst als vorhanden, wenn UI, Application Use Case, Agent- oder Tool-Pfad, Persistenz, Fehlerbehandlung, Diagnose und Tests zusammen funktionieren.
