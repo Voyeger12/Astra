@@ -10,8 +10,11 @@ Vor Änderungen sind mindestens zu lesen:
 - `SECURITY.md`
 - `docs/DEVELOPMENT.md`
 - `docs/ARCHITECTURE_RULES.md`
+- `docs/TEST-STRATEGY.md`
 - relevante ADRs unter `docs/adr/`
 - der passende Skill unter `.github/skills/`
+
+Für Features, Bugfixes, Agentenpfade, Tools, Persistenz und Sicherheitsänderungen ist `.github/skills/astra-test-first/SKILL.md` verpflichtend.
 
 ## Oberster Grundsatz
 
@@ -45,13 +48,28 @@ Lieber eine Aufgabe begründet nicht abschließen als einen scheinbar funktionie
 - Keine zusätzlichen Timeouts, Retries oder `if`-Abfragen, die nur Symptome verdecken.
 - Keine benachbarten Refactorings, Paketupdates oder Formatierungswellen als Teil eines Bugfixes.
 
+## Test-first und Contract-first
+
+- Deterministische Fachlogik, Policies, Pfade, Persistenz, Migrationen, Lifecycle und Cancellation werden test-first entwickelt.
+- Agent Runtime, Provider, Tools, Sessions und Speichergrenzen werden contract-first entwickelt.
+- Nichtdeterministisches Modellverhalten wird mit getrennten Evals geprüft.
+- Architektur- und Sicherheitsverträge werden nicht an eine konkrete Implementierung gekoppelt.
+- Keine Tests für hypothetische private Methoden oder erfundene Klassenhierarchien.
+- Ein Bugfix benötigt einen Regressionstest, der ohne den Fix fehlschlägt.
+
+## Änderung bestehender Tests
+
+- Tests niemals ändern, nur damit die Implementierung grün wird.
+- Eine Teständerung benötigt eine geänderte Anforderung, einen nachweislich fehlerhaften Test, ein ersetzendes ADR oder die Entfernung unnötiger Implementierungskopplung.
+- Alte und neue Erwartung, Begründung, Risiko und neuer Schutz müssen im Pull Request stehen.
+- Keine Testlöschung, kein Skip, keine abgeschwächte Assertion und kein Fake, das unabhängig von Eingaben Erfolg liefert.
+- Produktionscode darf nicht auf Testnamen, konkrete Testdaten oder Testumgebungsdetails verzweigen.
+
 ## Tests
 
-- Keine Fake-Tests, die nur den erzeugten Code spiegeln oder immer grün sind.
-- Keine Tests löschen, überspringen oder abschwächen, um einen Build zu retten.
-- Ein Bugfix benötigt einen Regressionstest, der das fehlerhafte Verhalten abdeckt.
 - Tests müssen fachlich erwartetes Verhalten prüfen.
 - Bei Agentenpfaden Contract Tests mit Fake-`IChatClient` und bei relevantem Verhalten lokale Evals vorsehen.
+- Evals ersetzen keine Unit-, Contract-, Architektur- oder Integrationstests.
 - Build, Tests, Analyzer und Warnungen tatsächlich ausführen. Nicht behaupten, sie seien erfolgreich, wenn sie nicht ausgeführt wurden.
 
 ## C# und Quellen
@@ -76,17 +94,17 @@ Lieber eine Aufgabe begründet nicht abschließen als einen scheinbar funktionie
 
 1. Aufgabe und Akzeptanzkriterien verstehen.
 2. Relevante Regeln, ADRs und Skills lesen.
-3. Betroffene Dateien, Verträge und Datenflüsse untersuchen.
-4. Bestehende Tests prüfen.
+3. Betroffene Dateien, Verträge, Datenflüsse und bestehende Tests untersuchen.
+4. Testkategorie und passende Testebene bestimmen.
 5. Ursache oder Implementierungsziel formulieren.
 6. Blast Radius einschätzen.
-7. Kleinste geeignete Änderung planen.
-8. Änderung implementieren.
-9. Relevante Tests ergänzen oder aktualisieren.
-10. Build, Tests, Analyzer und Warnungen ausführen.
-11. Gesamten Diff auf Nebenwirkungen und Architekturverletzungen prüfen.
+7. Bei deterministischem Verhalten zuerst einen fehlschlagenden Test oder Vertrag erstellen.
+8. Kleinste geeignete Änderung implementieren.
+9. Engste und anschließend breitere Tests ausführen.
+10. Build, Analyzer und Warnungen prüfen.
+11. Gesamten Diff auf Nebenwirkungen, Architekturverletzungen und testbezogene Sonderfälle prüfen.
 12. Ergebnis sowie nicht geprüfte Bereiche ehrlich dokumentieren.
 
 ## Stop-Regel
 
-Wenn eine Änderung nicht sicher verstanden wird, nicht durch großflächige Änderungen versuchen, zufällig eine funktionierende Lösung zu erzeugen. Zuerst mehr Kontext sammeln, offizielle Dokumentation prüfen oder die Unsicherheit offen benennen.
+Wenn eine Änderung oder das erwartete Verhalten nicht sicher verstanden wird, nicht durch großflächige Änderungen oder erfundene Tests versuchen, zufällig eine funktionierende Lösung zu erzeugen. Zuerst mehr Kontext sammeln, offizielle Dokumentation und bestehende Verträge prüfen oder die Unsicherheit offen benennen.
