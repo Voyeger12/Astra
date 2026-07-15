@@ -16,6 +16,8 @@ Astra befindet sich in der Architektur- und Bootstrap-Phase. Der frühere Python
 - Klare Schichten und austauschbare Infrastruktur
 - Vertikale, vollständig getestete Funktionen statt vieler halb verbundener Module
 - Datenschutz als durchgesetzte Systemregel, nicht nur als UI-Schalter
+- Korrektheit und begrenzter Blast Radius vor Entwicklungsgeschwindigkeit
+- Root-Cause-Fixes statt Symptombehandlung
 
 ## Geplanter Techstack
 
@@ -63,7 +65,18 @@ Der erste vollständige Ablauf umfasst:
 
 Noch nicht Bestandteil des ersten Meilensteins sind Kamera, Mikrofon, TTS, freie Shell, Multi-Agent-Orchestrierung und autonome Hintergrundaktivität.
 
-## Dokumentation
+## Repository-Regelwerk
+
+Die Regeln gelten für Menschen, Copilot, Coding-Agenten und automatisierte Änderungen:
+
+- [Mitwirkung und Änderungsprozess](CONTRIBUTING.md)
+- [Sicherheitsregeln](SECURITY.md)
+- [Technische Entwicklungsstandards](docs/DEVELOPMENT.md)
+- [Verbindliche Architekturregeln](docs/ARCHITECTURE_RULES.md)
+
+Korrektheit, Nachvollziehbarkeit und begrenzte Auswirkungen haben Vorrang vor Geschwindigkeit. Warnungen werden nicht versteckt, Bugfixes beheben die identifizierte Root Cause und Tests dürfen nicht manipuliert werden, um einen grünen Zustand zu erzeugen.
+
+## Weitere Dokumentation
 
 - [Vision](docs/VISION.md)
 - [Architektur](docs/ARCHITECTURE.md)
