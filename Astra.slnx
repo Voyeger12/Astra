@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Astra.Application/Astra.Application.csproj" />
+    <Project Path="src/Astra.AgentFramework/Astra.AgentFramework.csproj" />
+    <Project Path="src/Astra.Desktop/Astra.Desktop.csproj" />
+    <Project Path="src/Astra.Domain/Astra.Domain.csproj" />
+    <Project Path="src/Astra.Infrastructure/Astra.Infrastructure.csproj" />
+    <Project Path="src/Astra.Presentation/Astra.Presentation.csproj" />
+    <Project Path="src/Astra.Tools/Astra.Tools.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Astra.Architecture.Tests/Astra.Architecture.Tests.csproj" />
+  </Folder>
+</Solution>

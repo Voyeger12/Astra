@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Astra.Presentation/Astra.Presentation.csproj" />
+    <ProjectReference Include="../Astra.AgentFramework/Astra.AgentFramework.csproj" />
+    <ProjectReference Include="../Astra.Infrastructure/Astra.Infrastructure.csproj" />
+    <ProjectReference Include="../Astra.Tools/Astra.Tools.csproj" />
+  </ItemGroup>
+</Project>

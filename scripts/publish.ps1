@@ -6,10 +6,15 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+$solution = Join-Path $root 'Astra.slnx'
 $project = Join-Path $root 'src/Astra.Desktop/Astra.Desktop.csproj'
 
+if (-not (Test-Path $solution)) {
+    throw 'Astra.slnx wurde nicht gefunden.'
+}
+
 if (-not (Test-Path $project)) {
-    throw 'Astra.Desktop.csproj wurde noch nicht angelegt. Publish ist erst nach dem Solution-Scaffolding möglich.'
+    throw 'Astra.Desktop.csproj wurde nicht gefunden.'
 }
 
 Push-Location $root
