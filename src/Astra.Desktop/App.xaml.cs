@@ -8,7 +8,7 @@ using Serilog;
 
 namespace Astra.Desktop;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     private IHost? host;
     private ILogger<App>? logger;
