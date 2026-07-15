@@ -33,7 +33,11 @@ jobs:
 
       - name: Verify formatting and analyzers
         shell: pwsh
-        run: dotnet format Astra.slnx --verify-no-changes --no-restore
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts/logs | Out-Null
+          dotnet format Astra.slnx --verify-no-changes --no-restore --verbosity diagnostic 2>&1 |
+            Tee-Object -FilePath artifacts/logs/format.log
+          exit $LASTEXITCODE
 
       - name: Build release
         shell: pwsh
@@ -44,6 +48,7 @@ jobs:
         run: ./scripts/test.ps1 -Configuration Release
 
       - name: Upload generated lock files
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: operational-kernel-lockfiles
