@@ -7,7 +7,8 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $solution = Join-Path $root 'Astra.slnx'
-$project = Join-Path $root 'tests/Astra.Architecture.Tests/Astra.Architecture.Tests.csproj'
+$project = 'tests/Astra.Architecture.Tests/Astra.Architecture.Tests.csproj'
+$projectPath = Join-Path $root $project
 $results = Join-Path $root 'artifacts/test-results'
 $logs = Join-Path $root 'artifacts/logs'
 $logFile = Join-Path $logs 'test.log'
@@ -16,7 +17,7 @@ if (-not (Test-Path $solution)) {
     throw 'Astra.slnx wurde nicht gefunden.'
 }
 
-if (-not (Test-Path $project)) {
+if (-not (Test-Path $projectPath)) {
     throw 'Astra.Architecture.Tests.csproj wurde nicht gefunden.'
 }
 
