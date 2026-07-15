@@ -1,0 +1,55 @@
+name: Feature request
+description: Eine neue Fähigkeit oder Verbesserung vorschlagen
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Zu lösendes Problem
+      description: Welches konkrete Benutzer- oder Systemproblem besteht?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Gewünschtes Ergebnis
+      description: Beschreibe beobachtbares Verhalten, nicht nur eine technische Lösung.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Betrachtete Alternativen
+      description: Welche einfacheren Lösungen, vorhandenen Tools oder Workarounds wurden geprüft?
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Möglicher Risikobereich
+      options:
+        - Nur Darstellung oder Dokumentation
+        - Read-only-Funktion
+        - Persönliche Daten
+        - Externe Datenübertragung
+        - Systemänderung
+        - Sensorzugriff
+        - Destruktive Aktion
+        - Noch unklar
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Akzeptanzkriterien
+      description: Welche überprüfbaren Bedingungen müssen erfüllt sein?
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Bewusst nicht im Umfang
+      description: Welche angrenzenden Wünsche sollen nicht Teil dieser Änderung sein?
