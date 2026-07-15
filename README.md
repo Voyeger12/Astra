@@ -50,6 +50,16 @@ Astra.Tools          ┘
 
 Die Oberfläche kennt weder Ollama noch SQLite noch MCP direkt. Der Agent Loop wird vom Agent Framework betrieben. Astra behält die Kontrolle über Fachlogik, Tool-Berechtigungen, Daten, Lifecycle, Sicherheitsrichtlinien und Providerkonfiguration.
 
+## Build- und Laufzeitgrundlage
+
+- Das .NET SDK ist über `global.json` reproduzierbar festgelegt.
+- Gemeinsame Compiler-, Analyzer-, Lockfile- und Artefaktregeln liegen in `Directory.Build.props`.
+- NuGet-Versionen werden zentral über `Directory.Packages.props` verwaltet.
+- Reproduzierbare Build-Ausgaben liegen ausschließlich unter `artifacts/`.
+- Laufzeit- und Nutzerdaten liegen ausschließlich unter `%LOCALAPPDATA%\Astra`.
+- Die erste Veröffentlichung ist ein selbstenthaltener `win-x64`-Ordner, kein Installer und kein Single-File-Build.
+- Die Skripte unter `scripts/` brechen bewusst ab, solange die Solution noch nicht existiert, statt Erfolg zu simulieren.
+
 ## Erster Meilenstein
 
 Der erste vollständige Ablauf umfasst:
@@ -82,8 +92,15 @@ Korrektheit, Nachvollziehbarkeit und begrenzte Auswirkungen haben Vorrang vor Ge
 - [Architektur](docs/ARCHITECTURE.md)
 - [Techstack](docs/TECH-STACK.md)
 - [Daten- und Zustandslogik](docs/DATA-AND-STATE.md)
+- [Build und Release](docs/BUILD-AND-RELEASE.md)
+- [Pfade und Speicherung](docs/PATHS-AND-STORAGE.md)
+- [Installation und Erststart](docs/INSTALLATION-AND-FIRST-RUN.md)
 - [Architecture Decision Records](docs/adr/README.md)
 - [Repository Skills](.github/skills/README.md)
+
+## Lizenz
+
+Astra steht unter der [MIT-Lizenz](LICENSE).
 
 ## Entwicklungsregel
 
