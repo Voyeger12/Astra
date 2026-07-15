@@ -7,10 +7,11 @@ Astra wird als modularer Monolith mit klaren Schichtgrenzen aufgebaut. Die Anwen
 ## Solution-Struktur
 
 ```text
-Astra.sln
+Astra.slnx
 
 src/
 ├── Astra.Desktop
+├── Astra.Presentation
 ├── Astra.Application
 ├── Astra.Domain
 ├── Astra.AgentFramework
@@ -18,19 +19,27 @@ src/
 └── Astra.Tools
 
 tests/
-├── Astra.Application.Tests
-├── Astra.AgentFramework.Tests
-├── Astra.Infrastructure.Tests
-└── Astra.AgentEvals
+└── Astra.Architecture.Tests
 ```
+
+Weitere Testprojekte werden erst mit echten Tests angelegt.
 
 ## Verantwortlichkeiten
 
 ### Astra.Desktop
 
+- ausführbare WPF-Anwendung
+- Composition Root
+- Generic Host und Dependency Injection
+- kontrollierter Start und Shutdown
+- keine ViewModel- oder Fachlogik
+
+### Astra.Presentation
+
 - WPF Views und ViewModels
 - UI-State, Commands und Darstellung
-- keine direkte Modell-, Datenbank- oder MCP-Kommunikation
+- referenziert ausschließlich `Astra.Application`
+- keine direkte Modell-, Datenbank-, MCP- oder Agent-Framework-Kommunikation
 
 ### Astra.Application
 
@@ -63,7 +72,7 @@ tests/
 - SQLite-Repositories
 - Konfiguration, Logging und OpenTelemetry
 - MCP-Client und externe Adapter
-- Betriebssystemnahe Dienste
+- betriebssystemnahe Dienste
 
 ### Astra.Tools
 
@@ -74,13 +83,16 @@ tests/
 ## Abhängigkeitsregel
 
 ```text
-Desktop → Application → Domain
+Desktop → Presentation + AgentFramework + Infrastructure + Tools
+Presentation → Application
+Application → Domain
 AgentFramework → Application + Domain
 Infrastructure → Application + Domain
 Tools → Application + Domain
+Domain → keine Projektreferenz
 ```
 
-`Domain` referenziert keine andere Projektschicht. `Application` kennt nur Domain-Typen und eigene Interfaces.
+Nur `Astra.Desktop` darf als Composition Root konkrete Adapterprojekte zusammenführen. Views und ViewModels bleiben davon getrennt.
 
 ## Agent Runtime
 
@@ -99,7 +111,7 @@ Der Ereignisstrom muss mindestens Text-Deltas, Tool-Anfragen, Freigaben, Tool-Er
 
 ## Lifecycle
 
-`Microsoft.Extensions.Hosting` besitzt den Application-Lifecycle. Alle lang laufenden Komponenten unterstützen `CancellationToken` und werden über Dependency Injection erzeugt. Globale mutable Singletons und versteckte Initialisierung beim Import beziehungsweise beim Laden einer Klasse sind nicht erlaubt.
+`Microsoft.Extensions.Hosting` besitzt später den Application-Lifecycle. Alle lang laufenden Komponenten unterstützen `CancellationToken` und werden über Dependency Injection erzeugt. Globale mutable Singletons und versteckte Initialisierung beim Laden einer Klasse sind nicht erlaubt.
 
 ## Tools
 
