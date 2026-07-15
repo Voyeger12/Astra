@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [switch]$Locked
+    [switch]$UpdateLockFile
 )
 
 $ErrorActionPreference = 'Stop'
@@ -14,10 +14,11 @@ if (-not (Test-Path $solution)) {
 Push-Location $root
 try {
     $arguments = @('restore', $solution)
-    $arguments += if ($Locked) { '--locked-mode' } else { '--use-lock-file' }
+    $arguments += if ($UpdateLockFile) { '--use-lock-file' } else { '--locked-mode' }
     & dotnet @arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "dotnet restore ist mit Exitcode $LASTEXITCODE fehlgeschlagen."
+        $mode = if ($UpdateLockFile) { 'Lockfile-Aktualisierung' } else { 'Locked Restore' }
+        throw "$mode ist mit Exitcode $LASTEXITCODE fehlgeschlagen."
     }
 }
 finally {
