@@ -42,14 +42,16 @@ public sealed class AgentContractsTests
     [Fact]
     public async Task EventStreamAcceptsExactlyOneTerminalEvent()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var operationId = OperationId.New();
         var runId = AgentRunId.New();
         var events = GetEvents(
             new AstraAgentRunStartedEvent(operationId, runId, DateTimeOffset.UtcNow),
-            new AstraAgentCompletedEvent(operationId, runId, DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1)));
+            new AstraAgentCompletedEvent(operationId, runId, DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1)),
+            cancellationToken);
 
         var result = new List<AstraAgentEvent>();
-        await foreach (var item in events.ValidateTerminalContract())
+        await foreach (var item in events.ValidateTerminalContract(cancellationToken))
         {
             result.Add(item);
         }
@@ -60,13 +62,16 @@ public sealed class AgentContractsTests
     [Fact]
     public async Task EventStreamRejectsMissingOrRepeatedTerminalEvents()
     {
+        var cancellationToken = TestContext.Current.CancellationToken;
         var operationId = OperationId.New();
         var runId = AgentRunId.New();
 
         await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
-            await foreach (var _ in GetEvents(new AstraAgentRunStartedEvent(operationId, runId, DateTimeOffset.UtcNow))
-                               .ValidateTerminalContract())
+            await foreach (var _ in GetEvents(
+                                   new AstraAgentRunStartedEvent(operationId, runId, DateTimeOffset.UtcNow),
+                                   cancellationToken: cancellationToken)
+                               .ValidateTerminalContract(cancellationToken))
             {
             }
         });
@@ -74,9 +79,10 @@ public sealed class AgentContractsTests
         await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
             await foreach (var _ in GetEvents(
-                               new AstraAgentCompletedEvent(operationId, runId, DateTimeOffset.UtcNow, TimeSpan.Zero),
-                               new AstraAgentCancelledEvent(operationId, runId, DateTimeOffset.UtcNow))
-                               .ValidateTerminalContract())
+                                   new AstraAgentCompletedEvent(operationId, runId, DateTimeOffset.UtcNow, TimeSpan.Zero),
+                                   new AstraAgentCancelledEvent(operationId, runId, DateTimeOffset.UtcNow),
+                                   cancellationToken)
+                               .ValidateTerminalContract(cancellationToken))
             {
             }
         });
