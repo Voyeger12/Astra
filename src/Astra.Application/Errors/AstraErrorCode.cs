@@ -23,7 +23,13 @@ public readonly record struct AstraErrorCode
 
     public static AstraErrorCode AgentProviderUnavailable { get; } = new("ASTRA-AGENT-PROVIDER-UNAVAILABLE");
 
+    public static AstraErrorCode AgentModelNotFound { get; } = new("ASTRA-AGENT-MODEL-NOT-FOUND");
+
+    public static AstraErrorCode AgentProviderFailure { get; } = new("ASTRA-AGENT-PROVIDER-FAILURE");
+
     public static AstraErrorCode AgentTimeout { get; } = new("ASTRA-AGENT-TIMEOUT");
+
+    public static AstraErrorCode OllamaConfigurationInvalid { get; } = new("ASTRA-CONFIG-OLLAMA-INVALID");
 
     public override string ToString() => Value;
 }
