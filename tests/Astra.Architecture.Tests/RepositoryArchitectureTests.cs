@@ -26,7 +26,9 @@ public sealed class RepositoryArchitectureTests
             "src/Astra.Infrastructure/Astra.Infrastructure.csproj",
             "src/Astra.Presentation/Astra.Presentation.csproj",
             "src/Astra.Tools/Astra.Tools.csproj",
-            "tests/Astra.Architecture.Tests/Astra.Architecture.Tests.csproj"
+            "tests/Astra.Application.Tests/Astra.Application.Tests.csproj",
+            "tests/Astra.Architecture.Tests/Astra.Architecture.Tests.csproj",
+            "tests/Astra.Infrastructure.Tests/Astra.Infrastructure.Tests.csproj"
         };
 
         Assert.Equal(expected.Order(), actual.Order());
@@ -44,7 +46,9 @@ public sealed class RepositoryArchitectureTests
             ["Astra.Tools"] = ["Astra.Application", "Astra.Domain"],
             ["Astra.Presentation"] = ["Astra.Application"],
             ["Astra.Desktop"] = ["Astra.Presentation", "Astra.AgentFramework", "Astra.Infrastructure", "Astra.Tools"],
-            ["Astra.Architecture.Tests"] = []
+            ["Astra.Application.Tests"] = ["Astra.Application"],
+            ["Astra.Architecture.Tests"] = [],
+            ["Astra.Infrastructure.Tests"] = ["Astra.Infrastructure"]
         };
 
         foreach (var project in FindProjects())

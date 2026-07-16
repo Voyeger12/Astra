@@ -6,4 +6,10 @@
     <ProjectReference Include="../Astra.Application/Astra.Application.csproj" />
     <ProjectReference Include="../Astra.Domain/Astra.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Formatting.Compact" />
+    <PackageReference Include="Serilog.Sinks.File" />
+  </ItemGroup>
 </Project>

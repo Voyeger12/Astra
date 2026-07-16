@@ -33,13 +33,17 @@ jobs:
 
       - name: Verify formatting and analyzers
         shell: pwsh
-        run: dotnet format Astra.slnx --verify-no-changes --no-restore
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts/logs | Out-Null
+          dotnet format Astra.slnx --verify-no-changes --no-restore --verbosity diagnostic 2>&1 |
+            Tee-Object -FilePath artifacts/logs/format.log
+          exit $LASTEXITCODE
 
       - name: Build release
         shell: pwsh
         run: ./scripts/build.ps1 -Configuration Release
 
-      - name: Run architecture tests
+      - name: Run all tests
         shell: pwsh
         run: ./scripts/test.ps1 -Configuration Release
 
