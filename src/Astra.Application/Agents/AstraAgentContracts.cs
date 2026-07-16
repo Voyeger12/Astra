@@ -16,4 +16,13 @@ public sealed record AstraAgentRequest
     public AstraAgentRequest(string userText, OperationId operationId, AgentRunId agentRunId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userText);
-        if
+        if (userText.Length > MaximumUserTextLength)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(userText),
+                $"User text must not exceed {MaximumUserTextLength} characters.");
+        }
+
+        UserText = userText;
+        OperationId = operationId;
+        Agent
