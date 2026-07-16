@@ -101,7 +101,7 @@ public sealed record AstraAgentFailedEvent(
     AstraError Error)
     : AstraAgentEvent(OperationId, AgentRunId, OccurredAt);
 
-public static class AstraAgentEventStream
+public static class AstraAgentEventValidationExtensions
 {
     public static async IAsyncEnumerable<AstraAgentEvent> ValidateTerminalContract(
         this IAsyncEnumerable<AstraAgentEvent> source,
