@@ -40,7 +40,7 @@ public sealed class AgentContractsTests
     }
 
     [Fact]
-    public async Task EventStreamAcceptsExactlyOneTerminalEvent()
+    public async Task EventSequenceAcceptsExactlyOneTerminalEvent()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var operationId = OperationId.New();
@@ -60,7 +60,7 @@ public sealed class AgentContractsTests
     }
 
     [Fact]
-    public async Task EventStreamRejectsMissingOrRepeatedTerminalEvents()
+    public async Task EventSequenceRejectsMissingTerminalEvent()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
         var operationId = OperationId.New();
@@ -75,6 +75,14 @@ public sealed class AgentContractsTests
             {
             }
         });
+    }
+
+    [Fact]
+    public async Task EventSequenceRejectsRepeatedTerminalEvents()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var operationId = OperationId.New();
+        var runId = AgentRunId.New();
 
         await Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
@@ -83,6 +91,42 @@ public sealed class AgentContractsTests
                                    new AstraAgentCancelledEvent(operationId, runId, DateTimeOffset.UtcNow),
                                    cancellationToken)
                                .ValidateTerminalContract(cancellationToken))
+            {
+            }
+        });
+    }
+
+    [Fact]
+    public async Task EventSequenceRejectsEventsAfterTerminalEvent()
+    {
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var operationId = OperationId.New();
+        var runId = AgentRunId.New();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        {
+            await foreach (var _ in GetEvents(
+                                   new AstraAgentCompletedEvent(operationId, runId, DateTimeOffset.UtcNow, TimeSpan.Zero),
+                                   new AstraAgentStatusChangedEvent(operationId, runId, DateTimeOffset.UtcNow, AstraAgentRunStatus.Generating),
+                                   cancellationToken)
+                               .ValidateTerminalContract(cancellationToken))
+            {
+            }
+        });
+    }
+
+    [Fact]
+    public async Task EventSequencePreservesCancellation()
+    {
+        using var source = new CancellationTokenSource();
+        source.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+        {
+            await foreach (var _ in GetEvents(
+                                   new AstraAgentRunStartedEvent(OperationId.New(), AgentRunId.New(), DateTimeOffset.UtcNow),
+                                   cancellationToken: source.Token)
+                               .ValidateTerminalContract(source.Token))
             {
             }
         });
@@ -116,6 +160,7 @@ public sealed class AgentContractsTests
         if (second is not null)
         {
             await Task.Yield();
+            cancellationToken.ThrowIfCancellationRequested();
             yield return second;
         }
     }
