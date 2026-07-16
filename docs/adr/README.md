@@ -23,3 +23,4 @@ ADRs dokumentieren tragende Entscheidungen, ihren Kontext und ihre Folgen. Akzep
 - [ADR-010: Erste Distribution als self-contained win-x64-Ordner](0010-initial-distribution-strategy.md)
 - [ADR-011: Test-first und Contract Testing](0011-test-first-and-contract-testing.md)
 - [ADR-012: Präsentation und Composition Root trennen](0012-separate-presentation-and-composition-root.md)
+- [ADR-013: First Local Chat als erster vertikaler Slice](0013-first-local-chat.md)
