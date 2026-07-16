@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using Astra.Application.Errors;
 using Astra.Application.Observability;
 
 namespace Astra.Application.Agents;
@@ -18,11 +16,15 @@ public sealed record AstraAgentRequest
         ArgumentException.ThrowIfNullOrWhiteSpace(userText);
         if (userText.Length > MaximumUserTextLength)
         {
-            throw new ArgumentOutOfRangeException(
-                nameof(userText),
-                $"User text must not exceed {MaximumUserTextLength} characters.");
+            throw new ArgumentOutOfRangeException(nameof(userText), $"User text must not exceed {MaximumUserTextLength} characters.");
         }
 
         UserText = userText;
         OperationId = operationId;
-        Agent
+        AgentRunId = agentRunId;
+    }
+
+    public string UserText { get; }
+    public OperationId OperationId { get; }
+    public AgentRunId AgentRunId { get; }
+}
